@@ -1,55 +1,144 @@
+import { useState } from 'react';
+import Post from './Post';
+import CreatePost from './CreatePost';
+import UpdatePost from './UpdatePost';
 import './App.css';
 const axios = require('axios');
 
-//CREATE
-axios.post('https://jsonplaceholder.typicode.com/posts', {
-  title: 'Cats',
-  body: 'Cats are lovely',
-  userId: 10,
-})
-.then(function (response) {
-  console.log(response);
-})
-.catch(function (error) {
-  console.log(error);
-});
-
-//READ
-axios.get('https://jsonplaceholder.typicode.com/posts')
-  .then(function (response) {
-    console.log(response.data);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-
-  //UPDATE
-  axios.put('https://jsonplaceholder.typicode.com/posts/1', {
-    title: 'Lions',
-    body: 'Lions are not lovely',
-    userId: 1,
-  })
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
-
+  
   //DELETE
- axios.delete('https://jsonplaceholder.typicode.com/posts/1')
-  .then(function (response) {
-    console.log(response);
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+//  axios.delete('https://jsonplaceholder.typicode.com/posts/1')
+//   .then(function (response) {
+//     console.log(response);
+//   })
+//   .catch(function (error) {
+//     console.log(error);
+//   });
  
 function App() {
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [postBody, setPostBody] = useState("");
+  const [postTitle, setPostTitle] = useState("");
+  const [createdPostTitle, setCreatedPostTitle] = useState("");
+  const [createdPostBody, setCreatedPostBody] = useState("");
+  const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [updatePostTitle, setUpdatePostTitle] = useState("");
+  const [updatePostBody, setUpdatePostBody] = useState("");
+  const [updatePostId, setUpdatePostId] = useState("");
+  const [updatedPostTitle, setUpdatedPostTitle] = useState("");
+  const [updatedPostBody, setUpdatedPostBody] = useState("");
+  const [isUpdatingPost, setIsUpdatingPost] = useState(false);
+
+  const setTitle = e => {
+     setPostTitle(e.target.value);
+  }
+
+  const setBody = e => {
+    setPostBody(e.target.value);
+  }
+
+  const updateTitle = e => {
+    setUpdatePostTitle(e.target.value);
+  }
+
+  const updateBody = e => {
+    setUpdatePostBody(e.target.value);
+  }
+
+  const updateId = e => {
+     setUpdatePostId(e.target.value);
+  }
+
+  const getPost = () => {
+    setPosts([]);
+    setIsLoading(true);
+    axios.get('https://jsonplaceholder.typicode.com/posts')
+    .then(function (response) {
+       setPosts(response.data);
+       setIsLoading(false);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  const setPost = (e) => {
+    e.preventDefault();
+    setIsCreatingPost(false);
+    axios.post('https://jsonplaceholder.typicode.com/posts', {
+      title: `${postTitle}`,
+      body: `${postBody}`,
+      userId: 1,
+    })
+    .then(function (response) {
+      setCreatedPostTitle(response.data.title);
+      setCreatedPostBody(response.data.body);
+      setPostBody('');
+      setPostTitle('');
+      setIsCreatingPost(true);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
+  const updatePost = (e) => {
+    e.preventDefault();
+    setIsUpdatingPost(false);
+    axios.put(`https://jsonplaceholder.typicode.com/posts/${updatePostId}`, {
+    title: `${updatePostTitle}`,
+    body: `${updatePostBody}`,
+    userId: 1,
+    })
+    .then(function (response) {
+      console.log(response);
+      setUpdatedPostTitle(response.data.title);
+      setUpdatedPostBody(response.data.body);
+      setUpdatePostId('');
+      setUpdatePostTitle('');
+      setUpdatePostBody('');
+      setIsUpdatingPost(true);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
   return (
     <div className="App">
        <h1>Welcome</h1>
-       <p>Kindly open the developer console to view output.</p>      
+       <button onClick={getPost}>Get Posts</button>  
+       {isLoading && <p>Loading...</p>}
+       <div className='post__wrap'>
+        {posts.map(post => {
+          return <Post key={post.id} title={post.title} body={post.body}/>
+        })}   
+       </div>
+
+       <CreatePost
+         title={postTitle}
+         body={postBody}
+         handleTitleChange={setTitle}
+         handleBodyChange={setBody}
+         createPost={setPost}
+         isSuccess={isCreatingPost}
+         newTitle={createdPostTitle}
+         newBody={createdPostBody}
+       />
+
+       <UpdatePost
+          title={updatePostTitle}
+          body={updatePostBody}
+          postId={updatePostId}
+          handleIdChange={updateId}
+          handleBodyChange={updateBody}
+          handleTitleChange={updateTitle}
+          isSuccess={isUpdatingPost}
+          updatePost={updatePost}
+          newTitle={updatedPostTitle}
+          newBody={updatedPostBody}
+       />
     </div>
   );
 }
