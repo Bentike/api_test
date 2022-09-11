@@ -1,0 +1,16 @@
+.btn{
+    width: 15%;
+    border: none;
+    outline: none;
+    color: #fff;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 18px;
+    transition: all ease-in-out .3s;
+}
+
+.btn:hover{
+    opacity: .8;
+}

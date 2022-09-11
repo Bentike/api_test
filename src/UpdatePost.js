@@ -1,5 +1,6 @@
 import React from 'react';
 import Post from './Post';
+import Button from './Button';
 
 function UpdatePost({
   title, 
@@ -15,7 +16,7 @@ function UpdatePost({
 }) {
   return (
     <div>
-       <h2>Update Post</h2>
+       <h1>Update Post</h1>
         <form>
            <label htmlFor='id'>Post Id:</label> {" "}
            <input name='id'
@@ -48,7 +49,7 @@ function UpdatePost({
              onChange={handleBodyChange}
              />
            <br/> <br/>
-           <button onClick={updatePost}>Update Post</button>
+           <Button handleClick={updatePost} text="Update Post" bg="#fcba03"/>
         </form>
         {isSuccess && <h3 style={{color: 'green'}}>Post Updated successfully</h3>}
         {isSuccess && <Post title={newTitle} body={newBody}/>}

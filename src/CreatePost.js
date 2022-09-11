@@ -1,5 +1,6 @@
 import React from 'react';
 import Post from './Post';
+import Button from './Button';
 
 function CreatePost({
   title, 
@@ -12,7 +13,7 @@ function CreatePost({
   newBody}) {
   return (
     <div>
-       <h2>Create Post</h2>
+       <h1>Create Post</h1>
         <form>
            <label htmlFor='title'>Post title:</label> {" "}
            <input 
@@ -34,7 +35,7 @@ function CreatePost({
              onChange={handleBodyChange}
              />
            <br/> <br/>
-           <button onClick={createPost}>Create Post</button>
+           <Button handleClick={createPost} bg='green' text='Create Post'/>
         </form>
         {isSuccess && <h3 style={{color: 'green'}}>Post Created successfully</h3>}
         {isSuccess && <Post title={newTitle} body={newBody}/>}

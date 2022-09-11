@@ -2,19 +2,11 @@ import { useState } from 'react';
 import Post from './Post';
 import CreatePost from './CreatePost';
 import UpdatePost from './UpdatePost';
+import DeletePost from './DeletePost';
+import Button from './Button';
 import './App.css';
 const axios = require('axios');
 
-  
-  //DELETE
-//  axios.delete('https://jsonplaceholder.typicode.com/posts/1')
-//   .then(function (response) {
-//     console.log(response);
-//   })
-//   .catch(function (error) {
-//     console.log(error);
-//   });
- 
 function App() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -29,6 +21,8 @@ function App() {
   const [updatedPostTitle, setUpdatedPostTitle] = useState("");
   const [updatedPostBody, setUpdatedPostBody] = useState("");
   const [isUpdatingPost, setIsUpdatingPost] = useState(false);
+  const [deletePostId, setDeletePostId] = useState("");
+  const [isDeleteSuccess, setIsDeleteSuccess] = useState(false);
 
   const setTitle = e => {
      setPostTitle(e.target.value);
@@ -50,6 +44,10 @@ function App() {
      setUpdatePostId(e.target.value);
   }
 
+  const setDeletePost = e => {
+    setDeletePostId(e.target.value);
+  }
+
   const getPost = () => {
     setPosts([]);
     setIsLoading(true);
@@ -65,50 +63,73 @@ function App() {
 
   const setPost = (e) => {
     e.preventDefault();
-    setIsCreatingPost(false);
-    axios.post('https://jsonplaceholder.typicode.com/posts', {
-      title: `${postTitle}`,
-      body: `${postBody}`,
-      userId: 1,
-    })
-    .then(function (response) {
-      setCreatedPostTitle(response.data.title);
-      setCreatedPostBody(response.data.body);
-      setPostBody('');
-      setPostTitle('');
-      setIsCreatingPost(true);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    if(postTitle.length !== 0 && postBody.length !== 0){
+      setIsCreatingPost(false);
+      axios.post('https://jsonplaceholder.typicode.com/posts', {
+        title: `${postTitle}`,
+        body: `${postBody}`,
+        userId: 1,
+      })
+      .then(function (response) {
+        setCreatedPostTitle(response.data.title);
+        setCreatedPostBody(response.data.body);
+        setPostBody('');
+        setPostTitle('');
+        setIsCreatingPost(true);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+    return
   }
 
   const updatePost = (e) => {
     e.preventDefault();
-    setIsUpdatingPost(false);
-    axios.put(`https://jsonplaceholder.typicode.com/posts/${updatePostId}`, {
-    title: `${updatePostTitle}`,
-    body: `${updatePostBody}`,
-    userId: 1,
-    })
-    .then(function (response) {
-      console.log(response);
-      setUpdatedPostTitle(response.data.title);
-      setUpdatedPostBody(response.data.body);
-      setUpdatePostId('');
-      setUpdatePostTitle('');
-      setUpdatePostBody('');
-      setIsUpdatingPost(true);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    if(updatePostId.length !== 0 && updatePostTitle.length !== 0 && updatePostBody.length !== 0){
+      setIsUpdatingPost(false);
+      axios.put(`https://jsonplaceholder.typicode.com/posts/${updatePostId}`, {
+      title: `${updatePostTitle}`,
+      body: `${updatePostBody}`,
+      userId: 1,
+      })
+      .then(function (response) {
+        console.log(response);
+        setUpdatedPostTitle(response.data.title);
+        setUpdatedPostBody(response.data.body);
+        setUpdatePostId('');
+        setUpdatePostTitle('');
+        setUpdatePostBody('');
+        setIsUpdatingPost(true);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+    return
+  }
+
+  const deletePost = (e) => {
+     e.preventDefault();
+     if(deletePostId.length !== 0){
+      setIsDeleteSuccess(false);
+      axios.delete(`https://jsonplaceholder.typicode.com/posts/${deletePostId}`)
+     .then(function (response) {
+       console.log(response);
+       setDeletePostId('');
+       setIsDeleteSuccess(true);
+     })
+     .catch(function (error) {
+       console.log(error);
+     });
+     }
+     return;
   }
 
   return (
     <div className="App">
        <h1>Welcome</h1>
-       <button onClick={getPost}>Get Posts</button>  
+       <Button handleClick={getPost} text="Get Posts" bg="blue"/>
        {isLoading && <p>Loading...</p>}
        <div className='post__wrap'>
         {posts.map(post => {
@@ -138,6 +159,13 @@ function App() {
           updatePost={updatePost}
           newTitle={updatedPostTitle}
           newBody={updatedPostBody}
+       />
+
+       <DeletePost
+         id={deletePostId}
+         handleChange={setDeletePost}
+         deletePost={deletePost}
+         isSuccess={isDeleteSuccess}
        />
     </div>
   );
